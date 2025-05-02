@@ -1,2 +1,2 @@
 # Study materials and source code for **Droidcon Academy** course 
-> # Add Course Name 
+> # Mastering Unit and Integration Testing in KMP and CMP with Kotest  
