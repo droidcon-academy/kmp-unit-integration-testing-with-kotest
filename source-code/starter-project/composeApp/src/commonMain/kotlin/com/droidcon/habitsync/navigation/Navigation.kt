@@ -99,7 +99,7 @@ fun NavigationGraph(
 
             HabitDetailScreen(
                 habit = habit,
-                onBack = {}
+                onBack = {navController.popBackStack()}
             )
         }
         composable(route = Screen.Motivation.route) {
