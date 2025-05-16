@@ -102,12 +102,3 @@ fun HabitDetailScreen(
         }
     }
 }
-
-@Composable
-fun IconText(icon: ImageVector, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = Color.Blue, modifier = Modifier.size(24.dp))
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text, fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Color.Black)
-    }
-}
