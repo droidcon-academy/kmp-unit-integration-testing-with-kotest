@@ -41,18 +41,6 @@ class MongoRepositoryImpl : MongoRepository {
         return result.toResultFlow()
     }
 
-    override fun readInProgressHabit(): Flow<Result<List<Habit>>> {
-        val result: RealmResults<Habit>? =
-            realm?.query(Habit::class, "completed == false")?.find()
-        return result.toResultFlow()
-    }
-
-    override fun readCompletedHabit(): Flow<Result<List<Habit>>> {
-        val result: RealmResults<Habit>? =
-            realm?.query(Habit::class, "completed == true")?.find()
-        return result.toResultFlow()
-    }
-
     override fun getHabitById(habitId: String): Flow<Result<List<Habit>>> {
         val result: RealmResults<Habit>? =
             realm?.query(Habit::class, "_id == $0", ObjectId(habitId))?.find()
@@ -86,9 +74,6 @@ class MongoRepositoryImpl : MongoRepository {
                 completed = habit.completed
             }
         }
-    }
-
-    override suspend fun setCompleted(habit: Habit) {
     }
 
     override suspend fun deleteHabit(habitId: String) {

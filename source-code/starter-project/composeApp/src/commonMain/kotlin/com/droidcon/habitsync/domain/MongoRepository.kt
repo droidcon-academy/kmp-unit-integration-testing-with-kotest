@@ -7,11 +7,8 @@ interface MongoRepository {
     fun configureTheRealm()
     suspend fun addHabit(habit: Habit)
     fun getHabits(): Flow<Result<List<Habit>>>
-    fun readInProgressHabit(): Flow<Result<List<Habit>>>
-    fun readCompletedHabit(): Flow<Result<List<Habit>>>
     fun getHabitById(habitId: String): Flow<Result<List<Habit>>>
     fun getFilteredHabits(filter: String):Flow<Result<List<Habit>>>
     suspend fun updateHabit(habit: Habit, habitId: String)
-    suspend fun setCompleted(habit: Habit)
     suspend fun deleteHabit(habitId: String)
 }
