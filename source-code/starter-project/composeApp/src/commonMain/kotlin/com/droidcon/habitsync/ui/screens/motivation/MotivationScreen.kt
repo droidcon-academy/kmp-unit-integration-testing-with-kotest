@@ -34,15 +34,13 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun MotivationScreen() {
     val quote = remember { mutableStateOf("Believe in yourself and all that you are.") }
-
-    // Animated Gradient Background
     val gradientColors = listOf(Color(0xFF6200EA), Color(0xFFB388FF), Color(0xFF00C4B4))
     val brush = Brush.verticalGradient(colors = gradientColors)
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush) // Gradient background
+            .background(brush)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -50,7 +48,7 @@ fun MotivationScreen() {
             modifier = Modifier
                 .fillMaxWidth(0.9f)
                 .clip(RoundedCornerShape(16.dp))
-                .shadow(12.dp), // Glow effect
+                .shadow(12.dp), 
             backgroundColor = Color.White.copy(alpha = 0.9f),
             elevation = 12.dp
         ) {
