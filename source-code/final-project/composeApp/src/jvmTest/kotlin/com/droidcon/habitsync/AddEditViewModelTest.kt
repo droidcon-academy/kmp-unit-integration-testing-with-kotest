@@ -26,16 +26,12 @@ class AddEditViewModelAnnotationSpecTest : AnnotationSpec() {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     @AfterEach
     fun cleanup() {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
     @Test
@@ -52,6 +48,3 @@ class AddEditViewModelAnnotationSpecTest : AnnotationSpec() {
         latestState.habits.firstOrNull() shouldBe habit
     }
 }
-
-
-
