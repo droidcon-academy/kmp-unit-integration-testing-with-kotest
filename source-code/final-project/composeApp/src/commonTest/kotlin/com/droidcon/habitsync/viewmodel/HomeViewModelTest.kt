@@ -1,15 +1,12 @@
 package com.droidcon.habitsync.viewmodel
 
-import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import com.droidcon.habitsync.utils.exerciseHabit
 import com.droidcon.habitsync.utils.meditationHabit
@@ -19,10 +16,12 @@ import com.droidcon.habitsync.data.FakeMongoRepository
 import com.droidcon.habitsync.ui.screens.home.FilterType
 import com.droidcon.habitsync.ui.screens.home.SortType
 import com.droidcon.habitsync.utils.ViewStatus
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.core.test.testCoroutineScheduler
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class HomeViewModelTest: StringSpec({
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
+class HomeViewModelTest : FunSpec({
     val testDispatcher = StandardTestDispatcher()
     lateinit var fakeRepository: FakeMongoRepository
     lateinit var viewModel: HomeViewModel
@@ -42,185 +41,157 @@ class HomeViewModelTest: StringSpec({
         viewModel = HomeViewModel(fakeRepository)
     }
 
-    "should fetch habits successfully" {
-        runTest {
-            val habit1 = exerciseHabit
-            val habit2 = readingHabit
+    test("should fetch habits successfully").config(coroutineTestScope = true) {
+        val habit1 = exerciseHabit
+        val habit2 = readingHabit
 
-            fakeRepository.addHabit(habit1)
-            fakeRepository.addHabit(habit2)
+        fakeRepository.addHabit(habit1)
+        fakeRepository.addHabit(habit2)
 
-            viewModel.getHabits()
-            advanceUntilIdle()
+        viewModel.getHabits()
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.habits.first()
+        val latestState = viewModel.habits.first()
 
-            latestState.habits shouldContain habit1
-            latestState.habits shouldContain habit2
-            latestState.viewSate shouldBe ViewStatus.SUCCESS
-        }
+        latestState.habits shouldContain habit1
+        latestState.habits shouldContain habit2
+        latestState.viewSate shouldBe ViewStatus.SUCCESS
     }
 
-    "should handle failure when fetching habits" {
-        runTest {
-            fakeRepository.shouldFail = true
+    test("should handle failure when fetching habits").config(coroutineTestScope = true) {
+        fakeRepository.shouldFail = true
 
-            viewModel.getHabits()
-            advanceUntilIdle()
+        viewModel.getHabits()
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.habits.first()
-            advanceUntilIdle()
+        val latestState = viewModel.habits.first()
+        testCoroutineScheduler.advanceUntilIdle()
 
-            latestState.viewSate shouldBe ViewStatus.FAILED
-            latestState.habits shouldBe emptyList()
-            latestState.message shouldBe "Failed to fetch habits"
-        }
+        latestState.viewSate shouldBe ViewStatus.FAILED
+        latestState.habits shouldBe emptyList()
+        latestState.message shouldBe "Failed to fetch habits"
     }
 
 
-    "should delete a habit and update list" {
-        runTest {
-            val habit = exerciseHabit
-            fakeRepository.addHabit(habit)
+    test("should delete a habit and update list").config(coroutineTestScope = true) {
+        val habit = exerciseHabit
+        fakeRepository.addHabit(habit)
 
-            viewModel.deleteHabit(habit._id.toHexString())
-            advanceUntilIdle()
+        viewModel.deleteHabit(habit._id.toHexString())
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.habits.first()
-            latestState.habits.size shouldBe 0
-        }
+        val latestState = viewModel.habits.first()
+        latestState.habits.size shouldBe 0
     }
 
-    "should filter habits by weekly successfully" {
-        runTest {
-            val dailyHabit = exerciseHabit
-            val weeklyHabit = readingHabit
+    test("should filter habits by weekly successfully").config(coroutineTestScope = true) {
+        val dailyHabit = exerciseHabit
+        val weeklyHabit = readingHabit
 
-            fakeRepository.addHabit(dailyHabit)
-            fakeRepository.addHabit(weeklyHabit)
-            advanceUntilIdle()
+        fakeRepository.addHabit(dailyHabit)
+        fakeRepository.addHabit(weeklyHabit)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.getHabits()
-            advanceUntilIdle()
+        viewModel.getFilteredHabits(FilterType.WEEKLY)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.getFilteredHabits(FilterType.WEEKLY)
-            advanceUntilIdle()
-
-            val latestState = viewModel.habits.first()
-            latestState.habits.size shouldBe 1
-            latestState.habits.first().frequency shouldBe "Weekly"
-        }
+        val latestState = viewModel.habits.first()
+        latestState.habits.size shouldBe 1
+        latestState.habits.first().frequency shouldBe "Weekly"
     }
 
-    "should filter habits by daily successfully" {
-        runTest {
-            val dailyHabit = exerciseHabit
-            val weeklyHabit = readingHabit
+    test("should filter habits by daily successfully").config(coroutineTestScope = true) {
+        val dailyHabit = exerciseHabit
+        val weeklyHabit = readingHabit
 
-            fakeRepository.addHabit(dailyHabit)
-            fakeRepository.addHabit(weeklyHabit)
-            advanceUntilIdle()
+        fakeRepository.addHabit(dailyHabit)
+        fakeRepository.addHabit(weeklyHabit)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.getHabits()
-            advanceUntilIdle()
+        viewModel.getFilteredHabits(FilterType.DAILY)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.getFilteredHabits(FilterType.DAILY)
-            advanceUntilIdle()
-
-            val latestState = viewModel.habits.first()
-            latestState.habits.size shouldBe 1
-            latestState.habits.first().frequency shouldBe "Daily"
-        }
+        val latestState = viewModel.habits.first()
+        latestState.habits.size shouldBe 1
+        latestState.habits.first().frequency shouldBe "Daily"
     }
 
-    "should filter habits by All successfully" {
-        runTest {
-            val dailyHabit = exerciseHabit
-            val weeklyHabit = readingHabit
+    test("should filter habits by All successfully").config(coroutineTestScope = true) {
+        val dailyHabit = exerciseHabit
+        val weeklyHabit = readingHabit
 
-            fakeRepository.addHabit(dailyHabit)
-            fakeRepository.addHabit(weeklyHabit)
-            advanceUntilIdle()
+        fakeRepository.addHabit(dailyHabit)
+        fakeRepository.addHabit(weeklyHabit)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.getHabits()
-            advanceUntilIdle()
+        viewModel.getFilteredHabits(FilterType.ALL)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.getFilteredHabits(FilterType.ALL)
-            advanceUntilIdle()
-
-            val latestState = viewModel.habits.first()
-            latestState.habits.size shouldBe 2
-        }
+        val latestState = viewModel.habits.first()
+        latestState.habits.size shouldBe 2
     }
 
-    "should handle failure when filtering habits" {
-        runTest {
-            fakeRepository.shouldFail = true
+    test("should handle failure when filtering habits").config(coroutineTestScope = true) {
+        fakeRepository.shouldFail = true
 
-            viewModel.getFilteredHabits(FilterType.WEEKLY)
-            advanceUntilIdle()
+        viewModel.getFilteredHabits(FilterType.WEEKLY)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.habits.first()
+        val latestState = viewModel.habits.first()
 
-            latestState.viewSate shouldBe ViewStatus.FAILED
-            latestState.habits shouldBe emptyList()
-            latestState.message shouldBe "Failed to filter habits"
-        }
+        latestState.viewSate shouldBe ViewStatus.FAILED
+        latestState.habits shouldBe emptyList()
+        latestState.message shouldBe "Failed to filter habits"
     }
 
-    "should sort habits in ascending order" {
-        runTest {
-            val meditationHabit = meditationHabit
-            val studyHabit = studyHabit
-            val exerciseHabit = exerciseHabit
-            val readingHabit = readingHabit
+    test("should sort habits in ascending order").config(coroutineTestScope = true) {
+        val meditationHabit = meditationHabit
+        val studyHabit = studyHabit
+        val exerciseHabit = exerciseHabit
+        val readingHabit = readingHabit
 
-            fakeRepository.addHabit(meditationHabit)
-            fakeRepository.addHabit(studyHabit)
-            fakeRepository.addHabit(exerciseHabit)
-            fakeRepository.addHabit(readingHabit)
-            advanceUntilIdle()
-            viewModel.getHabits()
-            advanceUntilIdle()
+        fakeRepository.addHabit(meditationHabit)
+        fakeRepository.addHabit(studyHabit)
+        fakeRepository.addHabit(exerciseHabit)
+        fakeRepository.addHabit(readingHabit)
+        testCoroutineScheduler.advanceUntilIdle()
+        viewModel.getHabits()
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.sortHabits(SortType.ASCENDING)
-            advanceUntilIdle()
+        viewModel.sortHabits(SortType.ASCENDING)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.habits.first()
+        val latestState = viewModel.habits.first()
 
-            latestState.habits[0].name shouldBe exerciseHabit.name
-            latestState.habits[1].name shouldBe meditationHabit.name
-            latestState.habits[2].name shouldBe readingHabit.name
-            latestState.habits[3].name shouldBe studyHabit.name
-        }
+        latestState.habits[0].name shouldBe exerciseHabit.name
+        latestState.habits[1].name shouldBe meditationHabit.name
+        latestState.habits[2].name shouldBe readingHabit.name
+        latestState.habits[3].name shouldBe studyHabit.name
     }
 
-    "should sort habits in descending order" {
-        runTest {
-            val meditationHabit = meditationHabit
-            val studyHabit = studyHabit
-            val exerciseHabit = exerciseHabit
-            val readingHabit = readingHabit
+    test("should sort habits in descending order").config(coroutineTestScope = true) {
+        val meditationHabit = meditationHabit
+        val studyHabit = studyHabit
+        val exerciseHabit = exerciseHabit
+        val readingHabit = readingHabit
 
-            fakeRepository.addHabit(meditationHabit)
-            fakeRepository.addHabit(studyHabit)
-            fakeRepository.addHabit(exerciseHabit)
-            fakeRepository.addHabit(readingHabit)
-            advanceUntilIdle()
-            viewModel.getHabits()
-            advanceUntilIdle()
+        fakeRepository.addHabit(meditationHabit)
+        fakeRepository.addHabit(studyHabit)
+        fakeRepository.addHabit(exerciseHabit)
+        fakeRepository.addHabit(readingHabit)
+        testCoroutineScheduler.advanceUntilIdle()
+        viewModel.getHabits()
+        testCoroutineScheduler.advanceUntilIdle()
 
-            viewModel.sortHabits(SortType.DESCENDING)
-            advanceUntilIdle()
+        viewModel.sortHabits(SortType.DESCENDING)
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.habits.first()
+        val latestState = viewModel.habits.first()
 
-            latestState.habits[0].name shouldBe studyHabit.name
-            latestState.habits[1].name shouldBe readingHabit.name
-            latestState.habits[2].name shouldBe meditationHabit.name
-            latestState.habits[3].name shouldBe exerciseHabit.name
-        }
+        latestState.habits[0].name shouldBe studyHabit.name
+        latestState.habits[1].name shouldBe readingHabit.name
+        latestState.habits[2].name shouldBe meditationHabit.name
+        latestState.habits[3].name shouldBe exerciseHabit.name
     }
 
 })
-
