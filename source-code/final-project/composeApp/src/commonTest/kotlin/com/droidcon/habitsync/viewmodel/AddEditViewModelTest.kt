@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.setMain
 import com.droidcon.habitsync.utils.exerciseHabit
 import com.droidcon.habitsync.data.FakeMongoRepository
 import com.droidcon.habitsync.utils.ViewStatus
+import io.kotest.core.test.testCoroutineScheduler
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AddEditViewModelStringSpecTest : StringSpec({
@@ -27,19 +28,14 @@ class AddEditViewModelStringSpecTest : StringSpec({
     lateinit var fakeRepository: FakeMongoRepository
     lateinit var viewModel: HabitDetailViewModel
 
-    beforeSpec {
-        Dispatchers.setMain(testDispatcher)
-    }
-
-    afterSpec {
-        Dispatchers.resetMain()
-    }
-
     beforeTest {
+        Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
+    }
+
+    afterTest {
+        Dispatchers.resetMain()
     }
 
     "should fetch habit by ID successfully" {
@@ -58,7 +54,7 @@ class AddEditViewModelStringSpecTest : StringSpec({
     }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelFuncSpecTest : FunSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -68,34 +64,29 @@ class AddEditViewModelFuncSpecTest : FunSpec({
     beforeTest {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterTest {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
-    test("should fetch habit by ID successfully in FunSpec") {
-        runTest {
+    test("should fetch habit by ID successfully in FunSpec")
+        .config(coroutineTestScope = true) {
             val habit = exerciseHabit
             fakeRepository.addHabit(habit)
 
             viewModel.getHabitById(habit._id.toHexString())
-            advanceUntilIdle()
+            testCoroutineScheduler.advanceUntilIdle()
 
             val latestState = viewModel.viewState.first()
 
             latestState.viewSate shouldBe ViewStatus.SUCCESS
             latestState.habits.firstOrNull() shouldBe habit
         }
-    }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelBehaviorSpecTest : BehaviorSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -105,38 +96,32 @@ class AddEditViewModelBehaviorSpecTest : BehaviorSpec({
     beforeEach {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterEach {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
     given("an AddEditViewModel") {
         `when`("fetching a habit by ID successfully") {
-            then("it should return the correct habit") {
-                runTest {
-                    val habit = exerciseHabit
-                    fakeRepository.addHabit(habit)
+            then("it should return the correct habit").config(coroutineTestScope = true) {
+                val habit = exerciseHabit
+                fakeRepository.addHabit(habit)
 
-                    viewModel.getHabitById(habit._id.toHexString())
-                    advanceUntilIdle()
+                viewModel.getHabitById(habit._id.toHexString())
+                testCoroutineScheduler.advanceUntilIdle()
 
-                    val latestState = viewModel.viewState.first()
+                val latestState = viewModel.viewState.first()
 
-                    latestState.viewSate shouldBe ViewStatus.SUCCESS
-                    latestState.habits.first() shouldBe habit
-                }
+                latestState.viewSate shouldBe ViewStatus.SUCCESS
+                latestState.habits.first() shouldBe habit
             }
         }
     }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelDescribeSpecTest : DescribeSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -146,38 +131,33 @@ class AddEditViewModelDescribeSpecTest : DescribeSpec({
     beforeTest {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterTest {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
     describe("AddEditViewModel") {
         context("Fetching Habit By ID") {
-            it("should return habit successfully") {
-                runTest {
-                    val habit = exerciseHabit
-                    fakeRepository.addHabit(habit)
+            it("should return habit successfully").config(coroutineTestScope = true) {
+                val habit = exerciseHabit
+                fakeRepository.addHabit(habit)
 
-                    viewModel.getHabitById(habit._id.toHexString())
-                    advanceUntilIdle()
+                viewModel.getHabitById(habit._id.toHexString())
+                testCoroutineScheduler.advanceUntilIdle()
 
-                    val latestState = viewModel.viewState.first()
+                val latestState = viewModel.viewState.first()
 
-                    latestState.viewSate shouldBe ViewStatus.SUCCESS
-                    latestState.habits.firstOrNull() shouldBe habit
-                }
+                latestState.viewSate shouldBe ViewStatus.SUCCESS
+                latestState.habits.firstOrNull() shouldBe habit
+
             }
         }
     }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelShouldSpecTest : ShouldSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -187,34 +167,28 @@ class AddEditViewModelShouldSpecTest : ShouldSpec({
     beforeTest {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterTest {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
-    should("fetch habit by ID successfully") {
-        runTest {
-            val habit = exerciseHabit
-            fakeRepository.addHabit(habit)
+    should("fetch habit by ID successfully").config(coroutineTestScope = true) {
+        val habit = exerciseHabit
+        fakeRepository.addHabit(habit)
 
-            viewModel.getHabitById(habit._id.toHexString())
-            advanceUntilIdle()
+        viewModel.getHabitById(habit._id.toHexString())
+        testCoroutineScheduler.advanceUntilIdle()
 
-            val latestState = viewModel.viewState.first()
+        val latestState = viewModel.viewState.first()
 
-            latestState.viewSate shouldBe ViewStatus.SUCCESS
-            latestState.habits.firstOrNull() shouldBe habit
-        }
+        latestState.viewSate shouldBe ViewStatus.SUCCESS
+        latestState.habits.firstOrNull() shouldBe habit
     }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelFreeSpecTest : FreeSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -224,37 +198,31 @@ class AddEditViewModelFreeSpecTest : FreeSpec({
     beforeEach {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterEach {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
     "AddEditViewModel" - {
         "Fetching Habit By ID" - {
-            "should fetch habit successfully" {
-                runTest {
-                    val habit = exerciseHabit
-                    fakeRepository.addHabit(habit)
+            "should fetch habit successfully".config(coroutineTestScope = true) {
+                val habit = exerciseHabit
+                fakeRepository.addHabit(habit)
 
-                    viewModel.getHabitById(habit._id.toHexString())
-                    advanceUntilIdle()
+                viewModel.getHabitById(habit._id.toHexString())
+                testCoroutineScheduler.advanceUntilIdle()
 
-                    val latestState = viewModel.viewState.first()
-                    latestState.viewSate shouldBe ViewStatus.SUCCESS
-                    latestState.habits.first() shouldBe habit
-                }
+                val latestState = viewModel.viewState.first()
+                latestState.viewSate shouldBe ViewStatus.SUCCESS
+                latestState.habits.first() shouldBe habit
             }
         }
     }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelExpectSpecTest : ExpectSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -264,35 +232,29 @@ class AddEditViewModelExpectSpecTest : ExpectSpec({
     beforeEach {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterEach {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
     context("Fetching Habit By ID") {
-        expect("it should return habit successfully") {
-            runTest {
-                val habit = exerciseHabit
-                fakeRepository.addHabit(habit)
+        expect("it should return habit successfully").config(coroutineTestScope = true) {
+            val habit = exerciseHabit
+            fakeRepository.addHabit(habit)
 
-                viewModel.getHabitById(habit._id.toHexString())
-                advanceUntilIdle()
+            viewModel.getHabitById(habit._id.toHexString())
+            testCoroutineScheduler.advanceUntilIdle()
 
-                val latestState = viewModel.viewState.first()
-                latestState.viewSate shouldBe ViewStatus.SUCCESS
-                latestState.habits.first() shouldBe habit
-            }
+            val latestState = viewModel.viewState.first()
+            latestState.viewSate shouldBe ViewStatus.SUCCESS
+            latestState.habits.first() shouldBe habit
         }
     }
 })
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalStdlibApi::class)
 class AddEditViewModelFeatureSpecTest : FeatureSpec({
 
     val testDispatcher = StandardTestDispatcher()
@@ -302,32 +264,24 @@ class AddEditViewModelFeatureSpecTest : FeatureSpec({
     beforeEach {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        fakeRepository.shouldFail = false
-        fakeRepository.habitList.clear()
         viewModel = HabitDetailViewModel(fakeRepository)
     }
 
     afterEach {
         Dispatchers.resetMain()
-        fakeRepository.habitList.clear()
-        fakeRepository.shouldFail = false
     }
 
     feature("Fetching Habit By ID") {
-        scenario("Should return habit successfully") {
-            runTest {
-                val habit = exerciseHabit
-                fakeRepository.addHabit(habit)
+        scenario("Should return habit successfully").config(coroutineTestScope = true) {
+            val habit = exerciseHabit
+            fakeRepository.addHabit(habit)
 
-                viewModel.getHabitById(habit._id.toHexString())
-                advanceUntilIdle()
+            viewModel.getHabitById(habit._id.toHexString())
+            testCoroutineScheduler.advanceUntilIdle()
 
-                val latestState = viewModel.viewState.first()
-                latestState.viewSate shouldBe ViewStatus.SUCCESS
-                latestState.habits.first() shouldBe habit
-            }
+            val latestState = viewModel.viewState.first()
+            latestState.viewSate shouldBe ViewStatus.SUCCESS
+            latestState.habits.first() shouldBe habit
         }
     }
 })
-
-
