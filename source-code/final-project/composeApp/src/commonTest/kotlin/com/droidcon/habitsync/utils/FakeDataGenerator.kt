@@ -50,7 +50,7 @@ val studyHabit = createHabit(
     frequency = "Weekly",
     category = "Productivity",
     streak = 4,
-    completeDayOrWeek = 1,
+    completeDayOrWeek = 4,
     completed = true
 )
 
