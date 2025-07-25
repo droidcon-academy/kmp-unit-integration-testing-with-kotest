@@ -25,7 +25,7 @@ class AddEditViewModel(
             result.onSuccess { habitData ->
                 _viewState.update {
                     it.copy(
-                        viewSate = ViewStatus.SUCCESS,
+                        viewState = ViewStatus.SUCCESS,
                         habits = habitData
                     )
                 }
@@ -34,7 +34,7 @@ class AddEditViewModel(
             result.onFailure { exception ->
                 _viewState.update {
                     it.copy(
-                        viewSate = ViewStatus.FAILED,
+                        viewState = ViewStatus.FAILED,
                         habits = emptyList(),
                         message =  exception.message ?: "An error occurred"
                     )
