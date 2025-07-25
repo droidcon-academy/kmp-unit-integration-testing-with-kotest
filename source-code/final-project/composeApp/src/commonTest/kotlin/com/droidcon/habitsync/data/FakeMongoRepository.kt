@@ -14,7 +14,7 @@ class FakeMongoRepository : MongoRepository {
     override fun configureTheRealm() {}
 
     override suspend fun addHabit(habit: Habit) {
-        if (shouldFail) throw Exception("Failed to add habit")
+        if (shouldFail) return
         habitList.add(habit)
         getHabits()
     }
