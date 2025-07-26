@@ -44,7 +44,7 @@ class AddEditViewModelAnnotationSpecTest : AnnotationSpec() {
 
         val latestState = viewModel.viewState.first()
 
-        latestState.viewSate shouldBe ViewStatus.SUCCESS
+        latestState.viewState shouldBe ViewStatus.SUCCESS
         latestState.habits.firstOrNull() shouldBe habit
     }
 }
