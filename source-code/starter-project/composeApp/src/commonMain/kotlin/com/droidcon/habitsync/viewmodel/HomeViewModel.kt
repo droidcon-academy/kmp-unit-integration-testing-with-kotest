@@ -31,7 +31,7 @@ class HomeViewModel(
             result.onSuccess { habitData ->
                 _habits.update {
                     it.copy(
-                        viewSate = ViewStatus.SUCCESS,
+                        viewState = ViewStatus.SUCCESS,
                         habits = habitData
                     )
                 }
@@ -40,7 +40,7 @@ class HomeViewModel(
             result.onFailure { exception ->
                 _habits.update {
                     it.copy(
-                        viewSate = ViewStatus.FAILED,
+                        viewState = ViewStatus.FAILED,
                         habits = emptyList(),
                         message = exception.message ?: "An error occurred"
                     )
@@ -68,7 +68,7 @@ class HomeViewModel(
             result.onSuccess { habitData ->
                 _habits.update {
                     it.copy(
-                        viewSate = ViewStatus.SUCCESS,
+                        viewState = ViewStatus.SUCCESS,
                         habits = habitData
                     )
                 }
@@ -76,7 +76,7 @@ class HomeViewModel(
             result.onFailure { exception ->
                 _habits.update {
                     it.copy(
-                        viewSate = ViewStatus.FAILED,
+                        viewState = ViewStatus.FAILED,
                         habits = emptyList(),
                         message = exception.message ?: "An error occurred"
                     )
@@ -90,7 +90,7 @@ class HomeViewModel(
             SortType.ASCENDING -> {
                 _habits.update {
                     it.copy(
-                        viewSate = ViewStatus.SUCCESS,
+                        viewState = ViewStatus.SUCCESS,
                         habits = _habits.value.habits.sortedBy { it.name }
                     )
                 }
@@ -99,7 +99,7 @@ class HomeViewModel(
             SortType.DESCENDING -> {
                 _habits.update {
                     it.copy(
-                        viewSate = ViewStatus.SUCCESS,
+                        viewState = ViewStatus.SUCCESS,
                         habits = _habits.value.habits.sortedByDescending { it.name }
                     )
                 }
