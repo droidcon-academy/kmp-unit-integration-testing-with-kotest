@@ -55,7 +55,7 @@ class HomeViewModelTest : FunSpec({
 
         latestState.habits shouldContain habit1
         latestState.habits shouldContain habit2
-        latestState.viewSate shouldBe ViewStatus.SUCCESS
+        latestState.viewState shouldBe ViewStatus.SUCCESS
     }
 
     test("should handle failure when fetching habits").config(coroutineTestScope = true) {
@@ -67,7 +67,7 @@ class HomeViewModelTest : FunSpec({
         val latestState = viewModel.habits.first()
         testCoroutineScheduler.advanceUntilIdle()
 
-        latestState.viewSate shouldBe ViewStatus.FAILED
+        latestState.viewState shouldBe ViewStatus.FAILED
         latestState.habits shouldBe emptyList()
         latestState.message shouldBe "Failed to fetch habits"
     }
@@ -139,7 +139,7 @@ class HomeViewModelTest : FunSpec({
 
         val latestState = viewModel.habits.first()
 
-        latestState.viewSate shouldBe ViewStatus.FAILED
+        latestState.viewState shouldBe ViewStatus.FAILED
         latestState.habits shouldBe emptyList()
         latestState.message shouldBe "Failed to filter habits"
     }
