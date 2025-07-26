@@ -48,7 +48,7 @@ class AddEditViewModelStringSpecTest : StringSpec({
 
             val latestState = viewModel.viewState.first()
 
-            latestState.viewSate shouldBe ViewStatus.SUCCESS
+            latestState.viewState shouldBe ViewStatus.SUCCESS
             latestState.habits.firstOrNull()?.shouldBe(habit)
         }
     }
@@ -81,7 +81,7 @@ class AddEditViewModelFuncSpecTest : FunSpec({
 
             val latestState = viewModel.viewState.first()
 
-            latestState.viewSate shouldBe ViewStatus.SUCCESS
+            latestState.viewState shouldBe ViewStatus.SUCCESS
             latestState.habits.firstOrNull() shouldBe habit
         }
 })
@@ -114,7 +114,7 @@ class AddEditViewModelBehaviorSpecTest : BehaviorSpec({
 
                 val latestState = viewModel.viewState.first()
 
-                latestState.viewSate shouldBe ViewStatus.SUCCESS
+                latestState.viewState shouldBe ViewStatus.SUCCESS
                 latestState.habits.first() shouldBe habit
             }
         }
@@ -149,7 +149,7 @@ class AddEditViewModelDescribeSpecTest : DescribeSpec({
 
                 val latestState = viewModel.viewState.first()
 
-                latestState.viewSate shouldBe ViewStatus.SUCCESS
+                latestState.viewState shouldBe ViewStatus.SUCCESS
                 latestState.habits.firstOrNull() shouldBe habit
 
             }
@@ -183,7 +183,7 @@ class AddEditViewModelShouldSpecTest : ShouldSpec({
 
         val latestState = viewModel.viewState.first()
 
-        latestState.viewSate shouldBe ViewStatus.SUCCESS
+        latestState.viewState shouldBe ViewStatus.SUCCESS
         latestState.habits.firstOrNull() shouldBe habit
     }
 })
@@ -215,7 +215,7 @@ class AddEditViewModelFreeSpecTest : FreeSpec({
                 testCoroutineScheduler.advanceUntilIdle()
 
                 val latestState = viewModel.viewState.first()
-                latestState.viewSate shouldBe ViewStatus.SUCCESS
+                latestState.viewState shouldBe ViewStatus.SUCCESS
                 latestState.habits.first() shouldBe habit
             }
         }
@@ -248,7 +248,7 @@ class AddEditViewModelExpectSpecTest : ExpectSpec({
             testCoroutineScheduler.advanceUntilIdle()
 
             val latestState = viewModel.viewState.first()
-            latestState.viewSate shouldBe ViewStatus.SUCCESS
+            latestState.viewState shouldBe ViewStatus.SUCCESS
             latestState.habits.first() shouldBe habit
         }
     }
@@ -280,7 +280,7 @@ class AddEditViewModelFeatureSpecTest : FeatureSpec({
             testCoroutineScheduler.advanceUntilIdle()
 
             val latestState = viewModel.viewState.first()
-            latestState.viewSate shouldBe ViewStatus.SUCCESS
+            latestState.viewState shouldBe ViewStatus.SUCCESS
             latestState.habits.first() shouldBe habit
         }
     }
