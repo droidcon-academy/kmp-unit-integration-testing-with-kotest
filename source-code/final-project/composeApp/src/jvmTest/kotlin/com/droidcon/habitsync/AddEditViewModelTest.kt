@@ -3,7 +3,7 @@ package com.droidcon.habitsync
 import com.droidcon.habitsync.data.FakeMongoRepository
 import com.droidcon.habitsync.utils.ViewStatus
 import com.droidcon.habitsync.utils.exerciseHabit
-import com.droidcon.habitsync.viewmodel.HabitDetailViewModel
+import com.droidcon.habitsync.viewmodel.AddEditViewModel
 import io.kotest.core.spec.style.AnnotationSpec
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
@@ -20,13 +20,13 @@ class AddEditViewModelAnnotationSpecTest : AnnotationSpec() {
 
     val testDispatcher = StandardTestDispatcher()
     lateinit var fakeRepository: FakeMongoRepository
-    lateinit var viewModel: HabitDetailViewModel
+    lateinit var viewModel: AddEditViewModel
 
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         fakeRepository = FakeMongoRepository()
-        viewModel = HabitDetailViewModel(fakeRepository)
+        viewModel = AddEditViewModel(fakeRepository)
     }
 
     @AfterEach
