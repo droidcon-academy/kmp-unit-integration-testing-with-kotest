@@ -40,46 +40,48 @@ class AddHabitNestedTest : DescribeSpec({
     afterEach {
         Dispatchers.resetMain()
     }
-    context("Adding Habit") {
-        it("should mark habit as completed and update the repository")
-            .config(coroutineTestScope = true) {
-                val habit = studyHabit
-                viewModel.addHabit(habit)
+    describe("Adding Habit"){
+        context("Add Habit Successfully") {
+            it("should mark habit as completed and update the repository")
+                .config(coroutineTestScope = true) {
+                    val habit = studyHabit
+                    viewModel.addHabit(habit)
 
-                viewModel.getHabitById(habit._id.toHexString())
-                testCoroutineScheduler.advanceUntilIdle()
+                    viewModel.getHabitById(habit._id.toHexString())
+                    testCoroutineScheduler.advanceUntilIdle()
 
-                val latestState = viewModel.viewState.first()
-                latestState.viewState shouldBe ViewStatus.SUCCESS
-                latestState.habits.firstOrNull()?.completed shouldBe true
-            }
+                    val latestState = viewModel.viewState.first()
+                    latestState.viewState shouldBe ViewStatus.SUCCESS
+                    latestState.habits.firstOrNull()?.completed shouldBe true
+                }
 
-        it("should not mark habit as completed if streak is incomplete")
-            .config(coroutineTestScope = true) {
+            it("should not mark habit as completed if streak is incomplete")
+                .config(coroutineTestScope = true) {
+                    val habit = exerciseHabit
+                    viewModel.addHabit(habit)
+
+                    viewModel.getHabitById(habit._id.toHexString())
+                    testCoroutineScheduler.advanceUntilIdle()
+
+                    val latestState = viewModel.viewState.first()
+                    latestState.viewState shouldBe ViewStatus.SUCCESS
+                    latestState.habits.firstOrNull()?.completed shouldBe false
+                }
+        }
+        context("Failed to Add Habit") {
+            it("should handle failure when repository fails to save the habit").config(
+                coroutineTestScope = true
+            ) {
                 val habit = exerciseHabit
+                fakeRepository.shouldFail = true
                 viewModel.addHabit(habit)
 
                 viewModel.getHabitById(habit._id.toHexString())
                 testCoroutineScheduler.advanceUntilIdle()
 
                 val latestState = viewModel.viewState.first()
-                latestState.viewState shouldBe ViewStatus.SUCCESS
-                latestState.habits.firstOrNull()?.completed shouldBe false
+                latestState.viewState shouldBe ViewStatus.FAILED
             }
-    }
-    context("Failed to Add Habit") {
-        it("should handle failure when repository fails to save the habit").config(
-            coroutineTestScope = true
-        ) {
-            val habit = exerciseHabit
-            fakeRepository.shouldFail = true
-            viewModel.addHabit(habit)
-
-            viewModel.getHabitById(habit._id.toHexString())
-            testCoroutineScheduler.advanceUntilIdle()
-
-            val latestState = viewModel.viewState.first()
-            latestState.viewState shouldBe ViewStatus.FAILED
         }
     }
 })
